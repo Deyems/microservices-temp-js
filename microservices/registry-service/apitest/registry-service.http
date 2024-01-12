@@ -1,0 +1,24 @@
+// Testing the catalog-service - make sure to update the port
+@registry-service-port = 3080
+
+##
+# GET http://localhost:{{registry-service-port}}/register
+
+@id = 659dd83e892c32eaa192edbf
+
+###
+
+# GET http://localhost:{{catalog-service-port}}/items/{{id}}
+
+###
+
+##
+
+@servicename = myservice
+@serviceversion = 1.1.0
+@serviceport = 3000
+PUT http://localhost:{{registry-service-port}}/register/{{servicename}}/{{serviceversion}}/{{serviceport}}
+
+// Registering services
+###
+PUT http://localhost:3080/register/myservice/1.1.0/3000

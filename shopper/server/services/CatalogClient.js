@@ -56,7 +56,7 @@ class CatalogClient {
   static async create(data) {
     try {
       const result = await ServiceClient.callService("catalog-service", {
-        method: "get",
+        method: "POST",
         url: `/items`,
         data,
       });
@@ -99,7 +99,7 @@ class CatalogClient {
     try {
       const result = await ServiceClient.callService("catalog-service", {
         method: "delete",
-        url: `/items${itemId}`,
+        url: `/items/${itemId}`,
       });
       return result;
       // return ItemModel.deleteOne({ _id: itemId }).exec();

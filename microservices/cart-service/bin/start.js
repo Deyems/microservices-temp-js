@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 /* eslint-disable import/order */
 
 // Import necessary dependencies
@@ -11,17 +10,15 @@ const tracing = require("../lib/tracing")(
   `${config.serviceName}:${config.serviceVersion}`
 );
 
-// Import necessary dependencies
-const http = require("http"); // HTTP server functionality
+const http = require("http");
+const axios = require("axios");
 
-const axios = require('axios');
-
-const connectToMongoose = require("../lib/mongooseConnection"); // Function to connect to MongoDB
-// const connectToRedis = require("../lib/redisConnection"); // Function to connect to Redis
+// const connectToMongoose = require("../lib/mongooseConnection"); // Function to connect to MongoDB
+const connectToRedis = require("../lib/redisConnection"); // Function to connect to Redis
 
 // Prepare the Redis client to connect to later
 // This has to come before `app` is initiated because sessions depend on it
-// config.redis.client = connectToRedis(config.redis.options);
+config.redis.client = connectToRedis(config.redis.options);
 
 const app = require("../app"); // Express application
 
@@ -33,42 +30,45 @@ server.on("listening", () => {
   const addr = server.address();
   const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
 
-  const register = async () => 
-  axios
-  .put(`http://localhost:3080/register/${config.serviceName}/${config.serviceVersion}/${server.address().port}`)
-  .catch(err => {
-    console.error(`error occured`, JSON.stringify(err.stack));
-  });
-  
-  const unregister = async () => 
-  axios
-  .delete(`http://localhost:3080/register/${config.serviceName}/${config.serviceVersion}/${server.address().port}`)
-  .catch(err => {
-    console.error(`error occured`, JSON.stringify(err.message));
-  });
+  const registerService = () =>
+    axios
+      .put(
+        `http://localhost:3080/register/${config.serviceName}/${
+          config.serviceVersion
+        }/${server.address().port}`
+      )
+      .catch((err) => console.error(err));
+  const unregisterService = () =>
+    axios
+      .delete(
+        `http://localhost:3080/register/${config.serviceName}/${
+          config.serviceVersion
+        }/${server.address().port}`
+      )
+      .catch((err) => console.error(err));
 
-  register();
-  const interval = setInterval(register, 10000);
-
+  registerService();
+  const interval = setInterval(registerService, 15000);
   const cleanup = async () => {
-    const clean = false;
-    if(!clean){
+    let clean = false;
+    if (!clean) {
+      clean = true;
       clearInterval(interval);
-      unregister();
+      await unregisterService();
     }
-  }
+  };
 
   process.on("uncaughtException", async () => {
     await cleanup();
     process.exit(0);
   });
- 
-  process.on("SIGTERM", async () => {
+
+  process.on("SIGINT", async () => {
     await cleanup();
     process.exit(0);
   });
-  
-  process.on("SIGINT", async () => {
+
+  process.on("SIGTERM", async () => {
     await cleanup();
     process.exit(0);
   });
@@ -79,6 +79,5 @@ server.on("listening", () => {
 });
 
 // Start the server
-connectToMongoose(config.mongodb.url).then(() => {
-  server.listen(0);
-});
+
+config.redis.client.connect().then(() => server.listen(0));

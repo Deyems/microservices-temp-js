@@ -64,7 +64,7 @@ router.put("/items/:id", async (req, res) => {
 
 router.delete("/items/:id", async (req, res) => {
   try {
-    const {id} = req.params.id;
+    const { id } = req.params;
     const deletedItem = await CatalogService.remove(id);
     if(deletedItem.deletedCount === 0){
       return res.status(404).json({error: 'Item not found'});

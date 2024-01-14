@@ -14,7 +14,6 @@ class CatalogClient {
    * @returns {Promise<Array>} - A promise that resolves to an array of Items
    */
   static async getAll() {
-    console.log('are we getting to this Call');
     try {
       const result = await ServiceClient.callService("catalog-service", {
         method: "get",
@@ -34,7 +33,6 @@ class CatalogClient {
    * @returns {Promise<Object>} - A promise that resolves to an Item object
    */
   static async getOne(itemId) {
-    console.log("item id passed", itemId);
     try {
       const result = await ServiceClient.callService("catalog-service", {
         method: "get",
@@ -53,16 +51,15 @@ class CatalogClient {
    * @param {Object} data - The data for the new item
    * @returns {Promise<Object>} - A promise that resolves to the new Item object
    */
-  static async create(data) {
+  static async create(data, token) {
     try {
       const result = await ServiceClient.callService("catalog-service", {
         method: "POST",
         url: `/items`,
         data,
+        headers: {Authorization: `Bearer ${token}`},
       });
       return result;
-      // const item = new ItemModel(data);
-      // return item.save();
     } catch (error) {
       console.error(error, 'at Create Catalog');
       return null;
@@ -75,12 +72,13 @@ class CatalogClient {
    * @param {Object} data - The new data for the item
    * @returns {Promise<Object|null>} - A promise that resolves to the updated Item object, or null if no item was found
    */
-  static async update(itemId, data) {
+  static async update(itemId, data, token) {
     try {
       const result = await ServiceClient.callService("catalog-service", {
         method: "put",
         url: `/items/${itemId}`,
         data,
+        headers: {Authorization: `Bearer ${token}`},
       });
       return result;
       // return ItemModel.findByIdAndUpdate(itemId, data, { new: true }).exec();
@@ -95,11 +93,12 @@ class CatalogClient {
    * @param {string} itemId - The id of the item to remove
    * @returns {Promise<Object>} - A promise that resolves to the deletion result
    */
-  static async remove(itemId) {
+  static async remove(itemId, token) {
     try {
       const result = await ServiceClient.callService("catalog-service", {
         method: "delete",
         url: `/items/${itemId}`,
+        headers: {Authorization: `Bearer ${token}`},
       });
       return result;
       // return ItemModel.deleteOne({ _id: itemId }).exec();

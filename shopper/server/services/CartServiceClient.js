@@ -29,7 +29,7 @@ class CartServiceClient {
         data: { itemId }
       });
     } catch (error) {
-      console.error(error);
+      console.error(error, 'ERROR at ADD CART-SERVICE');
       throw new Error(error);
     }
   }
@@ -41,12 +41,13 @@ class CartServiceClient {
    */
   static async getAll(userId) {
     try {
+      console.log('GET ALL Calling Service Client!');
       return ServiceClient.callService("cart-service", {
         method: "get",
         url: `/items/${userId}`
       });
     } catch (error) {
-      console.error(error);
+      console.error(error, 'Error aT GET ALL CART-SERVICE');
       return [];
     }
   }
@@ -64,7 +65,7 @@ class CartServiceClient {
         url: `/items/${userId}/${itemId}`
       });
     } catch (error) {
-      console.error(error);
+      console.error(error, 'ERROR AT REMOVE CART-SERVICE');
       return [];
     }
   }

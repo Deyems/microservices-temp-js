@@ -1,7 +1,7 @@
 /** @module OrderService */
 
 // Import the Order and User models from mongoose
-const { Order, User } = require("../models/Order");
+const { Order } = require("../models/Order");
 
 /**
  * Service class for managing orders

@@ -43,7 +43,7 @@ module.exports.assignTemplateVariables = async (req, res, next) => {
       return next(error);
     }
   }
-  next();
+  return next();
 };
 
 module.exports.requireAdmin = (req, res, next) => {

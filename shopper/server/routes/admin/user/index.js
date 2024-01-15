@@ -8,7 +8,12 @@ const router = express.Router();
 // Route for getting all users or a specific user by ID
 router.get("/:userId?", async (req, res, next) => {
   try {
-    const users = await UserService.getAll(); // Get all users
+    let users = null;
+    try {
+      users = await UserService.getAll(); // Get all users
+    } catch (error) {
+      console.log(error, 'Error at getting all/Single User Route');
+    }
 
     let user = null;
     // The optional userId param was passed

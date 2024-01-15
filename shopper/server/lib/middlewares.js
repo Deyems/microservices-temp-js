@@ -23,12 +23,19 @@ module.exports.assignTemplateVariables = async (req, res, next) => {
       if(res.locals.currentUser){
         const userId = res.locals.currentUser.id;
         let cartCount = 0;
-        const cartContents = await CartService.getAll(userId);
-        if (cartContents) {
-          Object.keys(cartContents).forEach((itemId) => {
-            cartCount += parseInt(cartContents[itemId], 10);
-          });
+
+        try {
+          const cartContents = await CartService.getAll(userId);
+          if (cartContents) {
+            Object.keys(cartContents).forEach((itemId) => {
+              cartCount += parseInt(cartContents[itemId], 10);
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          // throw new Error(error.toString());
         }
+
         res.locals.cartCount = cartCount;
       }
 

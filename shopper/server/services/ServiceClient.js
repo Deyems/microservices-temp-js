@@ -15,7 +15,7 @@ class ServiceClient{
             return response.data;
         } catch (error) {
 
-            const errorMessage = (error.response && error.response.data && error.data.message) || error.message;
+            const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message;
             throw new Error(errorMessage);
         }
     }
@@ -32,7 +32,7 @@ class ServiceClient{
             return response.data;
         } catch (error) {
             
-            const errorMessage = (error.response && error.response.data && error.data.message) || error.message;
+            const errorMessage = (error.response && error.response.data && error.response.data.message) || error.message;
             throw new Error(errorMessage);
 
         }

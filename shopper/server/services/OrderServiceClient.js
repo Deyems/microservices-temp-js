@@ -2,7 +2,9 @@
 /** @module OrderServiceClient */
 
 // eslint-disable-next-line max-classes-per-file
+const amqp = require("amqplib");
 const ServiceClient = require("./ServiceClient");
+
 
 // eslint-disable-next-line no-unused-vars
 class OrderServiceClient2 {
@@ -84,11 +86,27 @@ class OrderServiceClient {
    * @returns {Promise<Object>} - A promise that resolves to the new order
    */
   static async create(userId, email, items) {
+    try {
+        const connection = await amqp.connect("amqp://127.0.0.1");
+        const channel = await connection.createChannel();
+        const queue = "orders";
+        const message = JSON.stringify({userId, email, items});
+    
+        await channel.assertQueue(queue, {durable: true});
+        channel.sendToQueue(queue, Buffer.from(message));
+        console.log(" [x] Sent to %s", message);
+    } catch (error) {
+        console.error(error, 'Error at Create using AMQP');
+    }
+    /**
     return ServiceClient.callService("order-service", {
       method: "post",
       url: `/orders`,
       data: { userId, email, items }
     });
+    *
+    */
+
   }
 
   /**
